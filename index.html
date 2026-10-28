@@ -474,7 +474,7 @@ button,input,select{font-family:inherit; color:inherit}
       <h2>Playtest notes <span id="noteCount"></span></h2>
       <button type="button" class="btn" data-act="notes-close">Close</button>
     </div>
-    <p class="note" style="margin:0">Each note is stamped with the week, your cash and the screen you were on. Notes stay in this browser, even after a new game. When you are ready, add your name and tap Send notes to Pranay. If sending does not work for you, Copy all and message them instead.</p>
+    <p class="note" style="margin:0">Each note is stamped with the week, your cash and the screen you were on. Notes stay in this browser, even after a new game. When you are ready, add your name, tap Copy all and send the text to Pranay.</p>
     <label class="sr" for="noteText">New note</label>
     <textarea id="noteText" rows="3" placeholder="What did you notice? Example: used market shows too many deals in week 3."></textarea>
     <div class="actions">
@@ -482,7 +482,7 @@ button,input,select{font-family:inherit; color:inherit}
       <button type="button" class="btn" data-act="notes-copy">Copy all</button>
       <button type="button" class="btn" id="clearNotes" data-act="notes-clear">Clear all</button>
     </div>
-    <label class="sort" style="margin-top:6px">Your name <input id="fbName" type="text" maxlength="40" placeholder="So Pranay knows who said it" autocomplete="off"></label>
+    <label class="sort" style="margin-top:6px">Your name <input id="fbName" type="text" maxlength="40" placeholder="Added to the notes you copy" autocomplete="off"></label>
     <div class="actions"><button type="button" class="btn primary" id="sendNotes" data-act="notes-send">Send notes to Pranay</button></div>
     <p class="hint" id="sendMsg" hidden></p>
     <p class="hint" id="exportHint" hidden>Your browser blocked copying. The text below is selected, so copy it yourself and paste it into the chat.</p>
@@ -3143,7 +3143,7 @@ function startGame(){
 
 /* ---------- playtest notes ---------- */
 var NOTES_KEY = 'skybaron2_notes_v1';
-var BUILD = 'chunk 24';
+var BUILD = 'chunk 25';
 var notesStore = {notes:[], draft:'', nextId:1, name:''};
 var noteTimer = null;
 
@@ -3170,7 +3170,7 @@ function noteContext(){
   return parts.join(' | ');
 }
 function notesText(){
-  var lines = ['SkyBaron 2 ('+BUILD+') playtest notes, '+notesStore.notes.length];
+  var lines = ['SkyBaron 2 ('+BUILD+') playtest notes, '+notesStore.notes.length+((notesStore.name||'').trim() ? ', from '+notesStore.name.trim() : '')];
   notesStore.notes.forEach(function(n, i){ lines.push((i+1)+'. ['+n.ctx+'] '+n.t); });
   return lines.join('\n');
 }
@@ -3222,6 +3222,7 @@ function hideExport(){ $('noteExport').hidden = true; $('exportHint').hidden = t
 function openNotes(){
   $('sheet').hidden = false; $('noteFab').hidden = true;
   $('noteText').value = notesStore.draft; $('fbName').value = notesStore.name || ''; sendMsg('');
+  var canSend = !!(window.claude && window.claude.use); $('sendNotes').hidden = !canSend;
   renderNotes();
   $('noteText').focus();
 }
